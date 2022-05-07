@@ -26,7 +26,8 @@ class AuthController extends Controller
                 'email' => 'required|email|unique:users,email',
                 'cpf' => 'required|digits:11|unique:users,cpf',
                 'password' => 'required',
-                'password_confirm' => 'required|same:password'
+                'password_confirm' => 'required|same:password',
+                'type_user_id' => 'required'
             ]);
 
             if(!$validator->fails()) {
@@ -34,6 +35,7 @@ class AuthController extends Controller
                 $email = $request->input('email');
                 $cpf = $request->input('cpf');
                 $password = $request->input('password');
+                $type_user_id = $request->input('type_user_id');
 
                 $hash = password_hash($password, PASSWORD_DEFAULT);
 
@@ -42,10 +44,11 @@ class AuthController extends Controller
                 $newUser->email = $email;
                 $newUser->cpf = $cpf;
                 $newUser->password = $hash;
+                $newUser->type_user_id = $type_user_id;
                 $newUser->save();
 
                 $token = auth()->attempt([
-                	'cpf' => $cpf, 
+                	'cpf' => $cpf,
                 	'password' => $password
                 ]);
 
@@ -86,12 +89,54 @@ class AuthController extends Controller
 	        $password = $request->input('password');
 
 	        $token = auth()->attempt([
-                	'cpf' => $cpf, 
+                	'cpf' => $cpf,
                 	'password' => $password
                 ]);
 
                 if(!$token) {
                     $array['error'] = 'CPF e/ou senha errados';
+                    return $array;
+                }
+
+                $array['token'] = $token;
+
+                $user = auth()->user();
+                $array['user'] = $user;
+
+                $properties = Unit::select(['id', 'name'])
+                ->where('id_owner', $user['id'])
+                ->get();
+
+                $array['user']['properties'] = $properties;
+
+
+	    }else {
+            $array['error'] = $validator->errors()->first();
+            return $array;
+        }
+
+    	return $array;
+    }
+
+    public function loginAdmin(Request $request) {
+    	$array = ['error' => ''];
+
+    	$validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if(!$validator->fails()) {
+	        $email = $request->input('email');
+	        $password = $request->input('password');
+
+	        $token = auth()->attempt([
+                	'email' => $email,
+                	'password' => $password
+                ]);
+
+                if(!$token) {
+                    $array['error'] = 'E-mail e/ou senha errados';
                     return $array;
                 }
 

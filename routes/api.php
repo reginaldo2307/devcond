@@ -24,11 +24,21 @@ Route::get('/ping', function(){
 Route::get('/401', [AuthController::class, 'unauthorized'])->name('login');
 
 Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/admin/auth/login', [AuthController::class, 'loginAdmin']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:api')->group(function(){
+
+    Route::group(['prefix' => 'admin'], function () {
+        Route::get('/walls', [WallController::class, 'getAll']);
+    });
+
     Route::post('/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+
+    //profile User
+    Route::get('/profile/{id}', [UserController::class, 'getProfile']);
+    Route::put('/profile/edit', [UserController::class, 'update']);
 
     //Mural de Avisos
     Route::get('/walls', [WallController::class, 'getAll']);
@@ -62,7 +72,7 @@ Route::middleware('auth:api')->group(function(){
     //Reservas
     Route::get('/reservations', [ReservationController::class, 'getReservations']);
     Route::post('/reservation/{id}', [ReservationController::class, 'setReservation']);
-    Route::get('/reservation/{id}/disableddates', [ReservationController::class, 'getDisabledDates']);    
+    Route::get('/reservation/{id}/disableddates', [ReservationController::class, 'getDisabledDates']);
     Route::get('//reservation/{id}/times', [ReservationController::class, 'getTimes']);
     Route::get('/myreservations', [ReservationController::class, 'getMyReservations']);
     Route::delete('/myreservation/{id}', [ReservationController::class, 'delMyReservation']);
