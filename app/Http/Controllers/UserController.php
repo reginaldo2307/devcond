@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+
+use App\Models\Unit;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -13,6 +15,11 @@ class UserController extends Controller
 
         if($id) {
             $array['user'] = User::find($id);
+            $properties = Unit::select(['id', 'name'])
+                ->where('id_owner', $id)
+                ->get();
+
+            $array['user']['properties'] = $properties;
         }else {
             $array['error'] = 'ID Inexistente';
             return $array;
