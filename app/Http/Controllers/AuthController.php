@@ -118,7 +118,7 @@ class AuthController extends Controller
     	return $array;
     }
 
-    public function loginAdmin(Request $request) {
+    /*public function loginAdmin(Request $request) {
     	$array = ['error' => ''];
 
     	$validator = Validator::make($request->all(), [
@@ -158,7 +158,7 @@ class AuthController extends Controller
         }
 
     	return $array;
-    }
+    }*/
 
     public function validateToken () {
     	$array = ['error' => ''];

@@ -24,15 +24,15 @@ Route::get('/ping', function(){
 Route::get('/401', [AuthController::class, 'unauthorized'])->name('login');
 
 Route::post('/auth/login', [AuthController::class, 'login']);
-Route::post('/admin/auth/login', [AuthController::class, 'loginAdmin']);
+//Route::post('/admin/auth/login', [AuthController::class, 'loginAdmin']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:api')->group(function(){
 
-    Route::group(['prefix' => 'admin'], function () {
+    /*Route::group(['prefix' => 'admin'], function () {
         Route::get('/walls', [WallController::class, 'getAll']);
     });
-
+    */
     Route::post('/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
